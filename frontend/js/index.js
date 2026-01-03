@@ -1,3 +1,5 @@
+document.getElementById("submit-btn").addEventListener("click", submitBusiness);
+
 function submitBusiness() {
   const description = document.getElementById("desc").value;
 
@@ -11,5 +13,7 @@ function submitBusiness() {
     .then((res) => res.json())
     .then((data) => {
       alert(data.message);
-    });
+      window.location.href = "dashboard.html"; // redirect to dashboard
+    })
+    .catch((err) => console.error("Error submitting business:", err));
 }

@@ -1,0 +1,14 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 2rem;
+}
+#business-list {
+  list-style-type: none;
+  padding: 0;
+}
+#business-list li {
+  background: #f2f2f2;
+  margin: 0.5rem 0;
+  padding: 0.5rem;
+  border-radius: 5px;
+}

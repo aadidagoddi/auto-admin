@@ -1,36 +1,54 @@
 from fastapi import FastAPI
-from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
+from typing import List
 
-# 1️⃣ Create the app
+from database import init_db, insert_business, get_all_businesses
+
+# --------------------
+# APP SETUP
+# --------------------
 app = FastAPI()
 
-# 2️⃣ Allow frontend requests (CORS)
+# --------------------
+# CORS MIDDLEWARE
+# --------------------
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # for now, allow all origins
+    allow_origins=["*"],        # Development only
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# 3️⃣ Pydantic model for request validation
+# --------------------
+# STARTUP EVENT
+# --------------------
+@app.on_event("startup")
+def startup_event():
+    init_db()
+
+# --------------------
+# REQUEST MODEL
+# --------------------
 class BusinessRequest(BaseModel):
     description: str
 
-# Optional: Pydantic model for response
-class BusinessResponse(BaseModel):
-    message: str
+# --------------------
+# RESPONSE MODEL
+# --------------------
+class BusinessEntry(BaseModel):
+    id: int
     description: str
 
-# 4️⃣ POST endpoint to receive business descriptions
+# --------------------
+# ROUTES
+# --------------------
 @app.post("/business")
 def receive_business(req: BusinessRequest):
-    return {
-        "message": "Business description received",
-        "description": req.description
-    }
+    insert_business(req.description)
+    return {"message": "Business saved"}
 
-# 5️⃣ Health check endpoint
-@app.get("/")
-def health_check():
-    return {"status": "backend running"}
+@app.get("/businesses", response_model=List[BusinessEntry])
+def list_businesses():
+    return get_all_businesses()
